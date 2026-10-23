@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Supper Phase 1 — Production Timelines</title>
+<style>
+  :root{
+    --bg:#f3f6fc; --card:#ffffff; --border:#dde3f0;
+    --navy:#0b1f5c; --navy2:#13307e; --text:#1d2440; --dim:#5d6585;
+    --gold:#c9962a; --gold-l:#f7ecd2;
+    --m1:#1e3a8a; --m2:#4f6bed; --m3:#d9a031; --m4:#0e9bd8;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);font-family:'Segoe UI',Helvetica,Arial,sans-serif;color:var(--text);}
+  .wrap{max-width:1360px;margin:0 auto;padding:0 32px 36px;}
+  .topbar{height:6px;background:linear-gradient(90deg,var(--navy2),var(--gold),var(--navy2));}
+
+  /* Header */
+  .header{display:flex;justify-content:space-between;align-items:center;padding:26px 0 18px;}
+  .brand{display:flex;align-items:center;gap:16px;}
+  .logo{width:56px;height:56px;border-radius:50%;border:2.5px solid var(--gold);display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-size:24px;font-weight:700;color:var(--gold);background:var(--navy);}
+  .brand h1{margin:0;font-size:30px;font-weight:800;color:var(--navy);}
+  .brand h1 span{color:var(--gold);}
+  .brand p{margin:3px 0 0;color:var(--dim);font-size:14px;}
+  .meta{text-align:right;color:var(--dim);font-size:13px;line-height:1.6;}
+
+  /* Hero */
+  .hero{border-radius:14px;padding:20px 26px;background:linear-gradient(120deg,#e8eefc,#f8f1df);border:1px solid #d6def3;display:flex;justify-content:space-between;align-items:center;gap:20px;}
+  .hero .lbl{font-size:12px;font-weight:700;letter-spacing:.07em;color:var(--gold);text-transform:uppercase;}
+  .hero h2{margin:5px 0 3px;font-size:23px;color:var(--navy);}
+  .hero p{margin:0;font-size:14px;color:#3a4266;}
+  .stats{display:flex;gap:12px;}
+  .stats div{background:#fff;border:1px solid var(--border);border-radius:12px;padding:10px 18px;text-align:center;min-width:120px;}
+  .stats b{display:block;font-size:26px;color:var(--navy);line-height:1.15;}
+  .stats span{font-size:12px;color:var(--dim);font-weight:600;}
+
+  /* Glance */
+  .glance{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:16px;}
+  .g{background:var(--card);border:1px solid var(--border);border-top:4px solid var(--c);border-radius:12px;padding:14px 16px;}
+  .g .lbl{font-size:11.5px;font-weight:700;letter-spacing:.05em;color:var(--dim);text-transform:uppercase;}
+  .g .name{font-size:15.5px;font-weight:700;color:var(--navy);margin:5px 0 8px;min-height:40px;}
+  .g .date{font-size:19px;font-weight:800;color:var(--c);}
+  .g .sub{font-size:12px;color:var(--dim);margin-top:4px;}
+
+  .section-title{display:flex;align-items:center;gap:10px;margin:28px 0 12px;}
+  .section-title h2{margin:0;font-size:21px;color:var(--navy);}
+  .section-title .dot{width:10px;height:10px;border-radius:50%;background:var(--gold);}
+  .section-title .hint{margin-left:auto;font-size:12.5px;color:var(--dim);}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 22px;}
+
+  /* Gantt */
+  .gantt{border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+  .grow{display:grid;grid-template-columns:330px 1fr;align-items:center;column-gap:16px;padding:11px 16px;}
+  .grow + .grow{border-top:1px solid var(--border);}
+  .grow.head{background:#f6f8fd;padding:8px 16px;}
+  .tname b{font-size:14px;color:var(--navy);}
+  .tname p{margin:2px 0 0;font-size:12px;color:var(--dim);}
+  .cols{display:grid;grid-template-columns:repeat(16,1fr);}
+  .weeks{display:grid;grid-template-columns:5fr 5fr 5fr 1fr;font-size:11px;font-weight:700;text-align:center;margin-bottom:4px;gap:4px;}
+  .weeks div{padding:3px 0;border-radius:6px;background:#e7ecfa;color:var(--navy2);}
+  .weeks .fin{background:var(--gold-l);color:#9a6d12;}
+  .days div{text-align:center;font-size:10.5px;color:var(--dim);line-height:1.25;}
+  .days div b{display:block;font-size:11.5px;color:var(--text);}
+  .days .wk,.track .wk{border-left:2px solid #c6cfe6;}
+  .days .hs b{color:var(--gold);}
+  .track{position:relative;height:34px;}
+  .track .c{border-left:1px dashed #e4e8f3;height:100%;}
+  .bar{position:absolute;top:7px;height:20px;border-radius:6px;font-size:11px;font-weight:700;color:#fff;display:flex;align-items:center;padding:0 8px;white-space:nowrap;overflow:hidden;}
+
+  /* Pie + drilldown */
+  .pie-card{min-height:470px;position:relative;}
+  .pie-view{display:grid;grid-template-columns:440px 1fr;gap:30px;align-items:center;}
+  .pie-view svg{width:420px;height:420px;}
+  .slice{cursor:pointer;transition:opacity .2s;}
+  .slice:hover{opacity:.85;}
+  .legend{display:flex;flex-direction:column;gap:10px;}
+  .lg{display:grid;grid-template-columns:16px 1fr auto;gap:14px;align-items:center;border:1px solid var(--border);border-radius:12px;padding:14px 16px;}
+  .lg .sw{width:16px;height:16px;border-radius:4px;background:var(--c);}
+  .lg b{font-size:15px;color:var(--navy);}
+  .lg p{margin:2px 0 0;font-size:12.5px;color:var(--dim);}
+  .lg .pc{font-size:22px;font-weight:800;color:var(--c);text-align:right;}
+  .lg .pc small{display:block;font-size:11.5px;font-weight:600;color:var(--dim);}
+  .method{font-size:12.5px;color:var(--dim);margin-top:4px;line-height:1.5;}
+
+  .drill{display:none;animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+  .drill-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px;}
+  .btn{border:1px solid var(--border);background:#fff;color:var(--navy);font-weight:700;font-size:13px;padding:8px 14px;border-radius:9px;cursor:pointer;font-family:inherit;}
+  .btn:hover{background:#f1f4fc;}
+  .close{width:36px;height:36px;padding:0;font-size:18px;line-height:1;}
+  .pills{display:flex;gap:8px;flex-wrap:wrap;}
+  .pill{border:1px solid var(--border);background:#fff;border-radius:20px;padding:6px 12px;font-size:12.5px;font-weight:600;color:var(--dim);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px;}
+  .pill i{width:9px;height:9px;border-radius:50%;background:var(--c);display:inline-block;}
+  .pill.on{border-color:var(--c);color:var(--navy);background:#f6f8fd;}
+  .dhead{border-left:5px solid var(--c);padding:4px 0 4px 16px;margin-bottom:16px;}
+  .dhead .lbl{font-size:12px;font-weight:700;letter-spacing:.06em;color:var(--c);text-transform:uppercase;}
+  .dhead h3{margin:4px 0 6px;font-size:24px;color:var(--navy);}
+  .facts{display:flex;gap:10px;flex-wrap:wrap;}
+  .fact{background:#f6f8fd;border:1px solid var(--border);border-radius:10px;padding:8px 14px;font-size:12.5px;color:var(--dim);}
+  .fact b{display:block;font-size:15px;color:var(--navy);}
+  .ilist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;}
+  .ilist li{display:flex;gap:14px;align-items:flex-start;padding:12px 4px;border-bottom:1px solid #edf0f7;opacity:0;animation:fade .3s ease forwards;}
+  .ilist li:last-child{border-bottom:none;}
+  .num{width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#fff;background:var(--c);}
+  .ilist b{font-size:15px;color:var(--navy);}
+  .ilist p{margin:2px 0 0;font-size:13px;color:#4a5274;}
+  .note{margin-top:14px;padding:12px 16px;border-radius:10px;font-size:13.5px;line-height:1.55;background:#eef3fd;border:1px solid #d4def6;color:#33405f;}
+  .note b{color:var(--navy2);}
+  .note.gold{background:#fbf5e6;border-color:#efdfb4;} .note.gold b{color:#9a6d12;}
+
+  .footer{display:flex;justify-content:space-between;color:var(--dim);font-size:13px;border-top:1px solid var(--border);margin-top:26px;padding-top:16px;}
+</style>
+</head>
+<body>
+<div class="topbar"></div>
+<div class="wrap">
+
+  <div class="header">
+    <div class="brand">
+      <div class="logo">ts</div>
+      <div>
+        <h1>Supper Phase 1 <span>Production Timelines</span></h1>
+        <p>Release plan to Play Store submission · 26 Oct – 14 Nov 2026</p>
+      </div>
+    </div>
+    <div class="meta">Generated 23 Oct 2026<br>Confidential · Internal</div>
+  </div>
+
+  <div class="hero">
+    <div>
+      <div class="lbl">Phase 1</div>
+      <h2>Play Store submission — Saturday, 14 Nov 2026</h2>
+    </div>
+    <div class="stats">
+      <div><b>4</b><span>milestones</span></div>
+    </div>
+  </div>
+
+  <div class="glance" id="glance"></div>
+
+  <div class="section-title"><span class="dot"></span><h2>Timeline at a Glance</h2></div>
+  <div class="card">
+    <div class="gantt" id="gantt"></div>
+  </div>
+
+  <div class="section-title"><span class="dot"></span><h2>Effort Split by Milestone</h2><span class="hint">Click a slice to drill down</span></div>
+  <div class="card pie-card" id="pieCard">
+    <div class="pie-view" id="pieView">
+      <svg viewBox="0 0 420 420" id="pie" aria-label="Effort split by milestone"></svg>
+      <div>
+        <div class="legend" id="legend"></div>
+        <div class="method">Calculation: working days in each milestone's window × 8 hours, divided by the 128 hours in the full plan (16 working days, weekends excluded except 14 Nov).</div>
+      </div>
+    </div>
+    <div class="drill" id="drill"></div>
+  </div>
+
+  <div class="footer">
+    <div>The Supper · Phase 1 Release Plan</div>
+    <div>Powered by Thinkhat</div>
+  </div>
+</div>
+
+<script>
+const DAYS = [
+  ['2026-10-26','Mon'],['2026-10-27','Tue'],['2026-10-28','Wed'],['2026-10-29','Thu'],['2026-10-30','Fri'],
+  ['2026-11-02','Mon'],['2026-11-03','Tue'],['2026-11-04','Wed'],['2026-11-05','Thu'],['2026-11-06','Fri'],
+  ['2026-11-09','Mon'],['2026-11-10','Tue'],['2026-11-11','Wed'],['2026-11-12','Thu'],['2026-11-13','Fri'],
+  ['2026-11-14','Sat']
+];
+const M = [
+  { id:1, color:'var(--m1)', hex:'#1e3a8a',
+    name:'Stabilization & Production Readiness', owners:'Dev + QA',
+    window:'26 Oct – 5 Nov', days:['2026-10-26','2026-10-27','2026-10-28','2026-10-29','2026-10-30','2026-11-02','2026-11-03','2026-11-04','2026-11-05'],
+    items:[
+      ['Defect fixes','Resolve all open defects logged so far.'],
+      ['Retesting','QA verifies every fix and closes the defect.'],
+      ['Sophie UI review','UI review by Sophie, with feedback applied.'],
+      ['Production configurations','Application settings set for the production environment.'],
+      ['AWS production configurations','AWS infrastructure configured for production.'],
+      ['Money flow testing','End-to-end testing of all payment and money flows.'],
+      ['Load balancing','Load balancing set up and verified for production traffic.']
+    ],
+    notes:[['','Runs in parallel:','All seven workstreams happen in parallel, not one after another. Dev and QA work on them at the same time so everything closes together by 5 Nov.'],
+           ['gold','Why it matters:','This is the largest milestone and gates everything after it — the new UI/UX screens, UAT and submission all assume a stable, production-configured build by 5 Nov.']] },
+  { id:2, color:'var(--m2)', hex:'#4f6bed',
+    name:'New UI/UX screens incorporation', owners:'Dev + Testing',
+    window:'6, 9 & 10 Nov', days:['2026-11-06','2026-11-09','2026-11-10'],
+    items:[['New UI/UX screens incorporation','New UI/UX screens incorporated into the app, developed and tested.']],
+    notes:[] },
+  { id:3, color:'var(--m3)', hex:'#d9a031',
+    name:'UAT (User acceptance testing)', owners:'',
+    window:'11, 12 & 13 Nov', days:['2026-11-11','2026-11-12','2026-11-13'],
+    items:[['UAT (User acceptance testing)','Three days for stakeholders to test and sign off the release.']],
+    notes:[] },
+  { id:4, color:'var(--m4)', hex:'#0e9bd8',
+    name:'Pre-Production & Play Store Submission', owners:'',
+    window:'14 Nov', days:['2026-11-14'],
+    items:[
+      ['Pre-Production configurations','Production URL served from cache/Octane.'],
+      ['Documents','Release documentation completed.'],
+      ['Play Store submission','App submitted to the Google Play Store.']
+    ],
+    notes:[['gold','Phase 1 hard stop:','The app must be submitted to the Play Store on 14 Nov 2026.']] }
+];
+const TOTAL_H = DAYS.length * 8;
+M.forEach(m => { m.hours = m.days.length * 8; m.pct = m.hours / TOTAL_H * 100; });
+const fmtPct = p => (Math.round(p * 100) / 100).toString().replace(/\.?0+$/, '') + '%';
+const esc = s => s.replace(/&/g,'&amp;');
+
+/* Glance cards */
+document.getElementById('glance').innerHTML = M.map(m => `
+  <div class="g" style="--c:${m.color}">
+    <div class="lbl">Milestone ${m.id}</div>
+    <div class="name">${esc(m.name)}</div>
+    <div class="date">${m.window}</div>
+    <div class="sub">${m.days.length} working day${m.days.length>1?'s':''} · ${m.hours} hrs · ${fmtPct(m.pct)}</div>
+  </div>`).join('');
+
+/* Gantt */
+const wkStart = new Set(['2026-11-02','2026-11-09','2026-11-14']);
+const dayHead = DAYS.map(([d,w]) => `<div class="${wkStart.has(d)?'wk':''} ${d==='2026-11-14'?'hs':''}"><b>${Number(d.slice(8))}</b>${w}</div>`).join('');
+const trackCells = DAYS.map(([d]) => `<div class="c ${wkStart.has(d)?'wk':''}"></div>`).join('');
+let g = `<div class="grow head"><div style="font-size:11.5px;font-weight:700;color:var(--dim);letter-spacing:.04em;">MILESTONE</div><div>
+  <div class="weeks"><div>WEEK 1 · 26 – 30 OCT</div><div>WEEK 2 · 2 – 6 NOV</div><div>WEEK 3 · 9 – 13 NOV</div><div class="fin">14 NOV</div></div>
+  <div class="cols days">${dayHead}</div></div></div>`;
+M.forEach(m => {
+  const i0 = DAYS.findIndex(([d]) => d === m.days[0]), n = m.days.length;
+  const label = n === 1 ? '14' : m.window;
+  g += `<div class="grow row"><div class="tname"><b>${m.id}. ${esc(m.name)}</b><p>${m.window} · ${n} day${n>1?'s':''}${m.owners?' · '+m.owners:''}</p></div>
+    <div class="track"><div class="cols" style="height:100%">${trackCells}</div>
+    <div class="bar" style="background:${m.color};left:calc(100%/16*${i0} + 2px);width:calc(100%/16*${n} - 4px);${n===1?'justify-content:center;padding:0;':''}">${label}</div></div></div>`;
+});
+document.getElementById('gantt').innerHTML = g;
+
+/* Pie */
+const cx = 210, cy = 210, R = 190, r = 100;
+const pt = (a, rad) => [cx + rad * Math.cos(a), cy + rad * Math.sin(a)];
+let a0 = -Math.PI / 2, svg = '';
+M.forEach(m => {
+  const a1 = a0 + m.pct / 100 * 2 * Math.PI, big = (a1 - a0) > Math.PI ? 1 : 0;
+  const [x0,y0]=pt(a0,R),[x1,y1]=pt(a1,R),[x2,y2]=pt(a1,r),[x3,y3]=pt(a0,r);
+  svg += `<path class="slice" fill="${m.hex}" stroke="#fff" stroke-width="3" d="M${x0} ${y0}A${R} ${R} 0 ${big} 1 ${x1} ${y1}L${x2} ${y2}A${r} ${r} 0 ${big} 0 ${x3} ${y3}Z" onclick="openDrill(${m.id})"><title>${esc(m.name)} — ${fmtPct(m.pct)}</title></path>`;
+  const mid = (a0 + a1) / 2, [lx, ly] = pt(mid, (R + r) / 2);
+  svg += `<text x="${lx}" y="${ly + 6}" text-anchor="middle" font-size="${m.pct < 10 ? 14 : 18}" font-weight="800" fill="#fff" pointer-events="none">${fmtPct(m.pct)}</text>`;
+  a0 = a1;
+});
+svg += `<text x="${cx}" y="${cy - 6}" text-anchor="middle" font-size="30" font-weight="800" fill="#0b1f5c">128 hrs</text>
+        <text x="${cx}" y="${cy + 20}" text-anchor="middle" font-size="13" fill="#5d6585">16 working days</text>`;
+document.getElementById('pie').innerHTML = svg;
+
+document.getElementById('legend').innerHTML = M.map(m => `
+  <div class="lg" style="--c:${m.color}">
+    <span class="sw"></span>
+    <div><b>${m.id}. ${esc(m.name)}</b><p>${m.window} · ${m.days.length} day${m.days.length>1?'s':''} × 8 hrs = ${m.hours} hrs</p></div>
+    <div class="pc">${fmtPct(m.pct)}<small>${m.hours} hrs</small></div>
+  </div>`).join('');
+
+/* Drilldown */
+const pieView = document.getElementById('pieView'), drill = document.getElementById('drill');
+function openDrill(id, scroll){
+  const m = M.find(x => x.id === id);
+  drill.innerHTML = `
+    <div class="drill-top">
+      <button class="btn" onclick="backToPie()">← Back to pie chart</button>
+      <div class="pills">${M.map(x => `<button class="pill ${x.id===id?'on':''}" style="--c:${x.color}" onclick="openDrill(${x.id})"><i></i>M${x.id}</button>`).join('')}</div>
+      <button class="btn close" onclick="backToPie()" title="Close">✕</button>
+    </div>
+    <div class="dhead" style="--c:${m.color}">
+      <div class="lbl">Milestone ${m.id} · ${fmtPct(m.pct)} of Phase 1 effort</div>
+      <h3>${esc(m.name)}</h3>
+      <div class="facts">
+        <div class="fact"><b>${m.window}</b>Dates</div>
+        <div class="fact"><b>${m.days.length} day${m.days.length>1?'s':''}</b>Working days</div>
+        <div class="fact"><b>${m.hours} hrs</b>Effort (8 hrs/day)</div>
+        ${m.owners?`<div class="fact"><b>${m.owners}</b>Owners</div>`:''}
+      </div>
+    </div>
+    <ul class="ilist" style="--c:${m.color}">
+      ${m.items.map((it, i) => `<li style="animation-delay:${i*60}ms"><span class="num">${i+1}</span><div><b>${esc(it[0])}</b><p>${esc(it[1])}</p></div></li>`).join('')}
+    </ul>
+    ${m.notes.map(n => `<div class="note ${n[0]}"><b>${n[1]}</b> ${esc(n[2])}</div>`).join('')}`;
+  pieView.style.display = 'none';
+  drill.style.display = 'block';
+  if (scroll) document.getElementById('pieCard').scrollIntoView({behavior:'smooth', block:'start'});
+}
+function backToPie(){
+  drill.style.display = 'none';
+  pieView.style.display = 'grid';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') backToPie(); });
+</script>
+</body>
+</html>
